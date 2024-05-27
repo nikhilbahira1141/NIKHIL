@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+<property resource="application-${env}.properties" />
+<property name ="log-path" value = "${logPath}"/>
+<property name ="log-level" value = "${API_LOG_LEVEL}"/>
+<property name ="log-file-name" value = "los-prelead"/>
+
+<statusListener class="ch.qos.logback.core.status.NopStatusListener"/>
+
+<appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+	<layout class="ch.qos.logback.classic.PatternLayout">
+		<Pattern>
+			%black(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] %yellow(%c{1.}): %msg%n%throwable
+		</Pattern>
+	</layout>
+</appender>
+
+<appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+<file>${log-path}/${log-file-name}.log</file>
+<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+	<Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+</encoder>
+
+<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	<fileNamePattern>${log-path}/archived/${log-file-name}-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+	<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+		<maxFileSize>5MB</maxFileSize>
+	</timeBasedFileNamingAndTriggeringPolicy>
+</rollingPolicy>	
+
+</appender>
+
+<appender name="AuditLogFile"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_PATH}/${LOG_FILE_NAME}-audit.log</file>
+		<encoder
+			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level : %msg%n
+			</Pattern>
+		</encoder>
+		
+		<!-- Setting up a rolling policy with rolling done
+			daily and when file size is 10MB-->
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_PATH}/archived/${LOG_FILE_NAME}-audit-%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+	</appender>
+
+<!-- LOG everything at log-level  -->
+<root level="${log-level}">
+	<appender-ref ref="RollingFile" />
+	<appender-ref ref="Console" />
+ </root>
+</configuration>
